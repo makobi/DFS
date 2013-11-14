@@ -30,7 +30,7 @@ class Handle_thread (threading.Thread):
 		print "Starting " + self.name
 
 	# Define what the thread is to do
-	def run(self, db):
+	def run(self, db, conn, addr):
 		""" This thread will listen to the client messages from client.py and then print 
 			the command the client wants to execute"""
 
@@ -79,6 +79,10 @@ db = mds_db()
 print "Connecting to database" 
 db.Connect() 
 
+threads = [] # Store threads
+i = 0		 # Count Threads
+max_threads = 5 # Maximum Threads allowed
+
 # Testing how to add a new node to the metadata server.
 # Note that I used a node name, the address and the port.
 # Address and port are necessary for connection.
@@ -109,27 +113,18 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 s.bind((HOST, PORT))                                  # Bind socket to an address
 s.listen(10)                                    	  # Stablishes the maximum of jobs that the socket can listen
 
-# Create new threads
-thread1 = Handle_thread("Handle_thread")          	  # Initialize thread1 to Producer_thread class
+while i != max_threads:
 
-# Start new Threads
-thread1.run(db)                                       # Start thread1 Producer Thread
-
-thread1.join()                                        # Wait until the Thread1 finishes
-
-# Below is an atempt to use multi-threading
-"""while True:
 	conn, addr = s.accept() #Starts accepting connections from the socket
 	# Create new threads
-	threads[i] = Producer_thread("Producer_thread")          # Initialize thread1 to Producer_thread class
-	#thread2 = Consumer_thread("Consumer_thread")          # Initialize thread2 to Consumer_thread class
+	threads.append(Handle_thread("Handle_thread"))         	 # Initialize thread1 to Producer_thread class
 
 	# Start new Threads
-	threads[i].start(conn, addr)                                       # Start thread1 Producer Thread
-	#thread2.start()                                       # Start thread2 Consumer Thread
+	threads[i].run(db, conn, addr)                           # Start thread1 Producer Thread
+
 	threads[i].join()                                        # Wait until the Thread1 finishes
-	#thread2.join()                                        # Wait until the Thread2 finishes
-	i = i+1"""
+
+	i = i + 1 												 # Increment counter
 
 print "Exiting Main Thread"
 s.close() 
