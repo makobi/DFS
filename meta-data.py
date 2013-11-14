@@ -30,7 +30,7 @@ class Handle_thread (threading.Thread):
 		print "Starting " + self.name
 
 	# Define what the thread is to do
-	def run(self):
+	def run(self, db):
 		""" This thread will listen to the client messages from client.py and then print 
 			the command the client wants to execute"""
 
@@ -44,18 +44,27 @@ class Handle_thread (threading.Thread):
 
 			if data[0] == str(0): 	# if header is 0
 				print "list"	  	# command is list
+				print
+				db.MetaListFiles(db) # Custom List Function; See mds_db.py
+				print
 
 			elif data[0] == str(1):	# if header is 1
 				print "copy"		# command is copy
+				print
 
 			elif data[0] == str(2):	# if header is 2
 				print "read"		# command is read
+				db.MetaFileRead(db, "/hola/cheo.txt") # Custom Read Function; See mds_db.py
+				print
 
 			elif data[0] == str(3):	# if header is 3
 				print "write"		# command is write
+				db.MetaFileWrite(db, "/hola/cheo.txt", [("n0", 1), ("n1", 1)]) # Custom Write Function; See mds_db.py
+				print
 
 			else:
 				print "command not recognized"
+				print
 
 			if not data: break
 
@@ -104,7 +113,7 @@ s.listen(10)                                    	  # Stablishes the maximum of j
 thread1 = Handle_thread("Handle_thread")          	  # Initialize thread1 to Producer_thread class
 
 # Start new Threads
-thread1.start()                                       # Start thread1 Producer Thread
+thread1.run(db)                                       # Start thread1 Producer Thread
 
 thread1.join()                                        # Wait until the Thread1 finishes
 

@@ -137,10 +137,13 @@ class mds_db:
 		self.c.execute(query)
 		return fsize, self.c.fetchall() 
 
-	def MetaListFiles(self):
+	"""<<< ENCAPSULATED CHEO'S CODE INTO FUNCTIONS >>>"""
+
+	def MetaListFiles(self, db): 
 		print "Files in the database"
 		for file, size in db.GetFiles():
 			print file, size
+		print
 		return 1
 
 	def Book_Keeping(self):
@@ -149,7 +152,7 @@ class mds_db:
 			print name, address, port
 		return 1
 
-	def MetaFileRead(self, fpath):
+	def MetaFileRead(self, db, fpath):
 		print "Testing retreiving Inode info"
 		fsize, chunks_info = db.GetFileInode("/hola/cheo.txt")
 
@@ -159,13 +162,14 @@ class mds_db:
 			print node, address, port, chunk
 		return 1
 
-	def MetaFileWrite(self, nodeToblock):
+	def MetaFileWrite(self, db, fpath, nodeToblock):
 		print "Adding blocks to the file, duplicate message if not the first time running"
 		print "this script"
 		try:
-			db.AddBlockToInode("/hola/cheo.txt", nodeToblock)
+			db.AddBlockToInode(fpath, nodeToblock)
 			return 1
 		except:
 			print "Won't duplicate"
 			return 0
+		print
 		
