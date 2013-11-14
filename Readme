@@ -1,0 +1,32 @@
+First Submit:
+
+	** Diagram
+
+Second Submit:
+
+	Installation:
+
+		- I installed the database in OS Mavericks
+
+	Libraries: 
+
+		- socket: Enable comunication between the meta data server, the clients and the data nodes
+		- threading: Enable Multi-threading 
+		- sys: Enable inline parameters
+		- MySQLdb: Enable database connection
+
+	meta-data.py: 
+
+		- Right now the meta-data.py connects to the database and proves it by inserting 
+		  two data-nodes into the database. Then checks what data-nodes are available and
+		  prints their information. After that it inserts the information of two files into
+		  the database.
+
+		- After the pre-setting is done it creates a thread that waits for a client to send
+		  a command. When it receives the command the meta-data checks the header and prints
+		  the corresponding command.
+
+	client.py:
+
+		- Connects to the meta-data server and sends three commands to test the headers and
+		  the connections.
