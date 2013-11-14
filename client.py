@@ -15,6 +15,7 @@
 #Libraries
 import socket              # Library used for the socket functions in this program.
 import sys                 # Library used for the inline parameters in this program.
+from time import sleep     # Library used for the sleep function in this program.
 
 HOST = str(sys.argv[2]) # The remote host. Inline Parameter.
 PORT = int(sys.argv[3]) # The same port as used by the server. Inline Parameter.
