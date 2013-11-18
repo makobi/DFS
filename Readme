@@ -12,7 +12,7 @@ Second Submit:
 
 		- socket: Enable comunication between the meta data server, the clients and the data nodes
 		- threading: Enable Multi-threading 
-		- sys: Enable inline parameters
+		- sys: Enable in-line parameters
 		- MySQLdb: Enable database connection
 
 	meta-data.py: 
@@ -22,11 +22,21 @@ Second Submit:
 		  prints their information. After that it inserts the information of two files into
 		  the database.
 
-		- After the pre-setting is done it creates a thread that waits for a client to send
-		  a command. When it receives the command the meta-data checks the header and prints
+		- After the pre-setting is done it waits for a client to send
+		  a command. When it receives the command the meta-data sends the connection to a new
+		  thread (Multi-Threading). THe thread checks the header and prints
 		  the corresponding command.
 
 	client.py:
 
 		- Connects to the meta-data server and sends three commands to test the headers and
 		  the connections.
+
+	How to run:
+
+		- Open terminal
+		- Move to the containing folder
+		- Open two tabs or more if you want to test multi-threading
+		- In one tab run 'python meta-data.py <port>' i.e. python meta-data.py 50003
+		- On the other tabs run 'python client.py <id> localhost <port>' 
+		  i.e. python client.py 1 localhost 50003 

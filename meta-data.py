@@ -24,53 +24,50 @@ import sys             # Library used for the inline parameters in this program.
 class Handle_thread (threading.Thread):
 
 	# Initialization of the thread
-	def __init__(self, name):
+	def __init__(self, name, db, conn, addr):
 		threading.Thread.__init__(self)
 		self.name = name
+		self.conn = conn
+		self.addr = addr
+		self.db = db
 		print "Starting " + self.name
 
 	# Define what the thread is to do
-	def run(self, db, conn, addr):
+	def run(self):
 		""" This thread will listen to the client messages from client.py and then print 
 			the command the client wants to execute"""
 
-		while True:
+		print 'Connected by', addr #prints the connection
 
-			conn, addr = s.accept() #Starts accepting connections from the socket
+		data = conn.recv(1024)  # Receive data from the socket.
 
-			print 'Connected by', addr #prints the connection
+		if data[0] == str(0): 	# if header is 0
+			print "list"	  	# command is list
+			print
+			db.MetaListFiles(db) # Custom List Function; See mds_db.py
+			print
 
-			data = conn.recv(1024)  # Receive data from the socket.
+		elif data[0] == str(1):	# if header is 1
+			print "copy"		# command is copy
+			print
 
-			if data[0] == str(0): 	# if header is 0
-				print "list"	  	# command is list
-				print
-				db.MetaListFiles(db) # Custom List Function; See mds_db.py
-				print
+		elif data[0] == str(2):	# if header is 2
+			print "read"		# command is read
+			db.MetaFileRead(db, "/hola/cheo.txt") # Custom Read Function; See mds_db.py
+			print
 
-			elif data[0] == str(1):	# if header is 1
-				print "copy"		# command is copy
-				print
+		elif data[0] == str(3):	# if header is 3
+			print "write"		# command is write
+			db.MetaFileWrite(db, "/hola/cheo.txt", [("n0", 1), ("n1", 1)]) # Custom Write Function; See mds_db.py
+			print
 
-			elif data[0] == str(2):	# if header is 2
-				print "read"		# command is read
-				db.MetaFileRead(db, "/hola/cheo.txt") # Custom Read Function; See mds_db.py
-				print
+		else:
+			print "command not recognized"
+			print
 
-			elif data[0] == str(3):	# if header is 3
-				print "write"		# command is write
-				db.MetaFileWrite(db, "/hola/cheo.txt", [("n0", 1), ("n1", 1)]) # Custom Write Function; See mds_db.py
-				print
+		conn.sendall("Success") # Send succes to the socket.
 
-			else:
-				print "command not recognized"
-				print
-
-			if not data: break
-
-			conn.sendall("Success") # Send succes to the socket.
-
-			conn.close()            # Close the connection.
+		conn.close()            # Close the connection.
 
 # Create an object of type mds_db
 db = mds_db() 
@@ -79,9 +76,9 @@ db = mds_db()
 print "Connecting to database" 
 db.Connect() 
 
-threads = [] # Store threads
-i = 0		 # Count Threads
 max_threads = 5 # Maximum Threads allowed
+threads = []*max_threads # Store threads
+i = 0		 # Count Threads
 
 # Testing how to add a new node to the metadata server.
 # Note that I used a node name, the address and the port.
@@ -113,18 +110,18 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 s.bind((HOST, PORT))                                  # Bind socket to an address
 s.listen(10)                                    	  # Stablishes the maximum of jobs that the socket can listen
 
-while i != max_threads:
+while len(threads) != max_threads:
 
 	conn, addr = s.accept() #Starts accepting connections from the socket
 	# Create new threads
-	threads.append(Handle_thread("Handle_thread"))         	 # Initialize thread1 to Producer_thread class
+	newthread = Handle_thread("Handle_thread", db, conn, addr)  # Initialize thread1 to Producer_thread class
 
-	# Start new Threads
-	threads[i].run(db, conn, addr)                           # Start thread1 Producer Thread
+	newthread.start()                           # Start thread1 Producer Thread
 
-	threads[i].join()                                        # Wait until the Thread1 finishes
+	threads.append(newthread)
 
-	i = i + 1 												 # Increment counter
+for t in threads:
+	t.join()                                        # Wait until the Thread1 finishes
 
 print "Exiting Main Thread"
 s.close() 
