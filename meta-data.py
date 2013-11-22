@@ -37,6 +37,8 @@ class Handle_thread (threading.Thread):
 		""" This thread will listen to the client messages from client.py and then print 
 			the command the client wants to execute"""
 
+		global NodeIdCount
+
 		print 'Connected by', addr #prints the connection
 
 		data = conn.recv(1024)  # Receive data from the socket.
@@ -61,11 +63,18 @@ class Handle_thread (threading.Thread):
 			db.MetaFileWrite(db, "/hola/cheo.txt", [("n0", 1), ("n1", 1)]) # Custom Write Function; See mds_db.py
 			print
 
+		elif data[0] == str(4):
+			print "creating node"
+			db.AddDataNode("n" + str(NodeIdCount), "136.145.54.1" + str(NodeIdCount), 80)
+			conn.sendall("n" + str(NodeIdCount)) # Send succes to the socket. 
+			NodeIdCount += 1
+			
 		else:
 			print "command not recognized"
 			print
 
-		conn.sendall("Success") # Send succes to the socket.
+		if data[0] != str(4):
+			conn.sendall("Success") # Send succes to the socket.
 
 		conn.close()            # Close the connection.
 
@@ -79,11 +88,12 @@ db.Connect()
 max_threads = 5 # Maximum Threads allowed
 threads = []*max_threads # Store threads
 i = 0		 # Count Threads
+NodeIdCount = 0
 
 # Testing how to add a new node to the metadata server.
 # Note that I used a node name, the address and the port.
 # Address and port are necessary for connection.
-
+'''
 print "Testing node addition"
 db.AddDataNode("n0", "136.145.54.10", 80) 
 db.AddDataNode("n1", "136.145.54.11", 80) 
@@ -103,12 +113,12 @@ print "Inserting two files to DB"
 db.InsertFile("/hola/cheo.txt", 20)
 db.InsertFile("/opt/blah.txt", 30)
 print
-
+'''
 HOST = ''                                             # Symbolic name meaning all available interfaces
 PORT = int(sys.argv[1])                               # Arbitrary non-privileged port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 s.bind((HOST, PORT))                                  # Bind socket to an address
-s.listen(10)                                    	  # Stablishes the maximum of jobs that the socket can listen
+s.listen(10)                                    	  # Establishes the maximum of jobs that the socket can listen
 
 while len(threads) != max_threads:
 
