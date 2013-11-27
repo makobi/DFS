@@ -95,7 +95,7 @@ db = mds_db()
 print "Connecting to database" 
 db.Connect() 
 
-max_threads = 10 # Maximum Threads allowed
+max_threads = 20 # Maximum Threads allowed
 threads = []*max_threads # Store threads
 i = 0		 # Count Threads
 NodeIdCount = 0

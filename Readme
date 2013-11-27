@@ -75,6 +75,8 @@ Third Submit:
 
 			- Documentation
 
+			- Use ip and ports. Right now only using ports.
+
 	client.py:
 
 		Acheived:
@@ -85,6 +87,8 @@ Third Submit:
 
 			- Handle copy command
 
+			- When reading from DFS we are printing in the terminal instead of creating a file.
+
 			- Enable manual input to users
 
 			- Documentation
@@ -93,6 +97,8 @@ Third Submit:
 
 		- The commands are not being parsed yet, right now the commands and some parameters are hard
 		coded. For this demo is better to run the program with cheo.txt, not because it won't work with other files but because you would have to change it in every place. Instead of changing the File maybe changing the content of cheo.txt is a better option for now.
+
+		- CHECK FOR RACE CONDITIONS
 
 	How to run:
 
