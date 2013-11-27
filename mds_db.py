@@ -146,21 +146,21 @@ class mds_db:
 		print
 		return 1
 
-	def Book_Keeping(self):
+	def Book_Keeping(self, db):
+		acum = ""
 		print "Testing all Available data nodes"
 		for name, address, port in  db.GetDataNodes():
-			print name, address, port
-		return 1
+			acum += str(name) + " " + str(address) + " " + str(port) + ","
+		return acum
 
 	def MetaFileRead(self, db, fpath):
+		acum = ""
 		print "Testing retreiving Inode info"
-		fsize, chunks_info = db.GetFileInode("/hola/cheo.txt")
-
+		fsize, chunks_info = db.GetFileInode(fpath)
 		print "File Size is:", fsize
-		print "and can be constructed from: "
 		for  node, address, port, chunk in chunks_info:
-			print node, address, port, chunk
-		return 1
+			acum += str(node) + " " + str(address) + " " + str(port) + " " + str(chunk) + ","
+		return acum
 
 	def MetaFileWrite(self, db, fpath, nodeToblock):
 		print "Adding blocks to the file, duplicate message if not the first time running"

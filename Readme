@@ -40,3 +40,67 @@ Second Submit:
 		- In one tab run 'python meta-data.py <port>' i.e. python meta-data.py 50003
 		- On the other tabs run 'python client.py <id> localhost <port>' 
 		  i.e. python client.py 1 localhost 50003 
+
+Third Submit:
+
+	meta-data.py: 
+
+		Achieved:
+
+			Right now the meta-data server responds to all the commands requested by the client except 
+
+		Bugs (working on it): 
+
+			- When information that is allready in the DB changes, it does not get updated
+
+		In progress:
+
+			- Handle the copy command.
+
+			- Run a book_keeping functionality to check the state of the nodes every t time.
+
+			- Documentation
+
+	data-node.py:
+
+		Achieved:
+
+			- The data nodes when started send a command to the meta-data so their id is set. After that they create a directory with their respective names. Right now the data nodes can store and send back to the client chunks. 
+
+		Bugs (Currently fixing): 
+
+			- The files that store the chunks are saved outside of their directory.
+
+		In progress:
+
+			- Documentation
+
+	client.py:
+
+		Acheived:
+
+			- Client right now handles all the commands except copy. It connects succesfully to the meta-data server and to the data-nodes too. 
+
+		In progress:
+
+			- Handle copy command
+
+			- Enable manual input to users
+
+			- Documentation
+
+	General:
+
+		- The commands are not being parsed yet, right now the commands and some parameters are hard
+		coded. For this demo is better to run the program with cheo.txt, not because it won't work with other files but because you would have to change it in every place. Instead of changing the File maybe changing the content of cheo.txt is a better option for now.
+
+	How to run:
+
+		- Open terminal
+		- Move to the containing folder
+		- Open two tabs or more if you want to test multi-threading
+		- In one tab run 'python meta-data.py <port>' i.e. python meta-data.py 50003
+		- On the other tabs run 'python data-node.py localhost <port>' 
+		  i.e. python data-node.py 1 localhost 50003 
+		- On the other tabs run 'python client.py <id> localhost <port>' 
+		  i.e. python client.py 1 localhost 50003 

@@ -20,7 +20,7 @@ import socket          # Library used for the socket functions in this program.
 import threading       # Library used for the threads and its functions in the program.
 import sys             # Library used for the inline parameters in this program.
 
-# Producer Class Thread
+# Handle Class Thread
 class Handle_thread (threading.Thread):
 
 	# Initialization of the thread
@@ -47,34 +47,44 @@ class Handle_thread (threading.Thread):
 			print "list"	  	# command is list
 			print
 			db.MetaListFiles(db) # Custom List Function; See mds_db.py
+			conn.sendall("Success") # Send succes to the socket.
 			print
 
 		elif data[0] == str(1):	# if header is 1
 			print "copy"		# command is copy
+			conn.sendall("Success") # Send succes to the socket.
 			print
 
 		elif data[0] == str(2):	# if header is 2
 			print "read"		# command is read
-			db.MetaFileRead(db, "/hola/cheo.txt") # Custom Read Function; See mds_db.py
-			print
+			info = db.MetaFileRead(db, "/hola/cheo.txt")
+			conn.sendall(info) # Send succes to the socket.
 
 		elif data[0] == str(3):	# if header is 3
 			print "write"		# command is write
-			db.MetaFileWrite(db, "/hola/cheo.txt", [("n0", 1), ("n1", 1)]) # Custom Write Function; See mds_db.py
+			info = db.Book_Keeping(db)
+			conn.sendall(info)
+			data = conn.recv(1024)  # Receive data from the socket.
+			data = data.split(",")
+			relation = []
+			for i in range (0, len(data)-1):
+				temp = data[i].split(":")
+				tup = (temp[0], temp[1])
+				relation.append(tup)
+			db.MetaFileWrite(db, "/hola/cheo.txt", relation) # Custom Write Function; See mds_db.py
+			print data
+			conn.sendall("Success") # Send succes to the socket.
 			print
 
 		elif data[0] == str(4):
 			print "creating node"
-			db.AddDataNode("n" + str(NodeIdCount), "136.145.54.1" + str(NodeIdCount), 80)
-			conn.sendall("n" + str(NodeIdCount)) # Send succes to the socket. 
+			db.AddDataNode("n" + str(NodeIdCount), "136.145.54.1" + str(NodeIdCount), str(5000) + str(NodeIdCount))
+			conn.sendall("n" + str(NodeIdCount) + " 136.145.54.1" + str(NodeIdCount) + " " + str(5000) + str(NodeIdCount)) # Send succes to the socket. 
 			NodeIdCount += 1
 			
 		else:
 			print "command not recognized"
 			print
-
-		if data[0] != str(4):
-			conn.sendall("Success") # Send succes to the socket.
 
 		conn.close()            # Close the connection.
 
@@ -85,35 +95,11 @@ db = mds_db()
 print "Connecting to database" 
 db.Connect() 
 
-max_threads = 5 # Maximum Threads allowed
+max_threads = 10 # Maximum Threads allowed
 threads = []*max_threads # Store threads
 i = 0		 # Count Threads
 NodeIdCount = 0
 
-# Testing how to add a new node to the metadata server.
-# Note that I used a node name, the address and the port.
-# Address and port are necessary for connection.
-'''
-print "Testing node addition"
-db.AddDataNode("n0", "136.145.54.10", 80) 
-db.AddDataNode("n1", "136.145.54.11", 80) 
-print 
-print "Testing if node was inserted"
-print "A tupple with node name and connection info must appear"
-print db.CheckNode("n0")
-print
-
-print "Testing all Available data nodes"
-for name, address, port in  db.GetDataNodes():
-	print name, address, port
-
-print 
-
-print "Inserting two files to DB"
-db.InsertFile("/hola/cheo.txt", 20)
-db.InsertFile("/opt/blah.txt", 30)
-print
-'''
 HOST = ''                                             # Symbolic name meaning all available interfaces
 PORT = int(sys.argv[1])                               # Arbitrary non-privileged port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
