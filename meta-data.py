@@ -20,6 +20,7 @@ import socket          # Library used for the socket functions in this program.
 import threading       # Library used for the threads and its functions in the program.
 import sys             # Library used for the inline parameters in this program.
 
+
 # Handle Class Thread
 class Handle_thread (threading.Thread):
 
@@ -46,22 +47,26 @@ class Handle_thread (threading.Thread):
 		if data[0] == str(0): 	# if header is 0
 			print "list"	  	# command is list
 			print
-			db.MetaListFiles(db) # Custom List Function; See mds_db.py
-			conn.sendall("Success") # Send succes to the socket.
-			print
-
-		elif data[0] == str(1):	# if header is 1
-			print "copy"		# command is copy
-			conn.sendall("Success") # Send succes to the socket.
+			info = db.MetaListFiles(db) # Custom List Function; See mds_db.py
+			conn.sendall(info) # Send succes to the socket.
 			print
 
 		elif data[0] == str(2):	# if header is 2
 			print "read"		# command is read
-			info = db.MetaFileRead(db, "/hola/cheo.txt")
+			data = data.split(" ")
+			filepath = data[-1]
+			info = db.MetaFileRead(db, filepath)
+			print info
+			print "aqui 3"
 			conn.sendall(info) # Send succes to the socket.
 
 		elif data[0] == str(3):	# if header is 3
 			print "write"		# command is write
+			data = data.split(" ")
+			filepath = data[-1]
+			filename = filepath.split("/")
+			filesize = data[-2]
+			db.InsertFile(filename[-1], filesize)
 			info = db.Book_Keeping(db)
 			conn.sendall(info)
 			data = conn.recv(1024)  # Receive data from the socket.
@@ -71,7 +76,7 @@ class Handle_thread (threading.Thread):
 				temp = data[i].split(":")
 				tup = (temp[0], temp[1])
 				relation.append(tup)
-			db.MetaFileWrite(db, "/hola/cheo.txt", relation) # Custom Write Function; See mds_db.py
+			db.MetaFileWrite(db, filepath, relation) # Custom Write Function; See mds_db.py
 			print data
 			conn.sendall("Success") # Send succes to the socket.
 			print
@@ -121,3 +126,5 @@ for t in threads:
 
 print "Exiting Main Thread"
 s.close() 
+
+db.Close()

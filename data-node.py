@@ -16,6 +16,7 @@
 #Libraries
 import socket          # Library used for the socket functions in this program.
 import threading       # Library used for the threads and its functions in the program.
+import shutil # Library used for the transfer of files to specific directories.
 import sys             # Library used for the inline parameters in this program.
 
 
@@ -35,6 +36,8 @@ class Handle_thread (threading.Thread):
 		""" This thread will listen to the client messages from client.py and then print 
 			the command the client wants to execute"""
 
+		global ChunkIdCount
+
 		print 'Connected by', addr #prints the connection
 
 		data = conn.recv(1024)  # Receive data from the socket.
@@ -43,17 +46,19 @@ class Handle_thread (threading.Thread):
 
 		if data[0] == str(0):
 
-			file = open(str(info[3]) + "_bk" + str(info[1]) + '.dat', 'w')
+			file = open(str(NodeInfo[0]) + "/_bk" + str(ChunkIdCount) + '.dat', 'w')
 
 			file.write(str(info[2]))
 
 			file.close()
 
-			conn.sendall("Chunk Stored") # Send succes to the socket.
+			conn.sendall(str(ChunkIdCount)) # Send succes to the socket.
+
+			ChunkIdCount += 1
 
 		elif data[0] == str(1):
 
-			f = open(str(info[2]) + "_bk" + str(info[1]) + '.dat', 'rb')
+			f = open(str(NodeInfo[0]) + "/_bk" + str(info[1]) + '.dat', 'rb')
 
 			Chunk = f.read() # read the entire content of the file
 
@@ -76,6 +81,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 s.connect((HOST, PORT))                               # Connect to a remote socket at address. 
 
 max_threads = 5 # Maximum Threads allowed
+ChunkIdCount = 0
 threads = []*max_threads # Store threads
 message = "4 true"                     				  # String that contains the header and the command
 s.sendall(message)                                     # Send data to the socket.
@@ -87,7 +93,12 @@ NodeInfo = Nodeid.split(" ")
 
 if not os.path.exists(NodeInfo[0]):
     os.makedirs(NodeInfo[0])
+else:
+	ChunkIdCount = len([name for name in os.listdir(os.getcwd() + "/" + str(NodeInfo[0]))])
+	print str(ChunkIdCount) + " entre"
 
+
+print str(ChunkIdCount) 
 HOST = '' #NodeInfo[1]                                             # Symbolic name meaning all available interfaces
 PORT = int(NodeInfo[2])                              # Arbitrary non-privileged port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
