@@ -38,8 +38,6 @@ class Handle_thread (threading.Thread):
 		""" This thread will listen to the client messages from client.py and then print 
 			the command the client wants to execute"""
 
-		global NodeIdCount
-
 		print 'Connected by', addr #prints the connection
 
 		data = conn.recv(1024)  # Receive data from the socket.
@@ -83,9 +81,9 @@ class Handle_thread (threading.Thread):
 
 		elif data[0] == str(4):
 			print "creating node"
-			db.AddDataNode("n" + str(NodeIdCount), "136.145.54.1" + str(NodeIdCount), str(5000) + str(NodeIdCount))
-			conn.sendall("n" + str(NodeIdCount) + " 136.145.54.1" + str(NodeIdCount) + " " + str(5000) + str(NodeIdCount)) # Send succes to the socket. 
-			NodeIdCount += 1
+			info = data.split(" ")
+			db.AddDataNode("n" + info[1], info[2], info[3])
+			conn.sendall("Node created") # Send succes to the socket. 
 			
 		else:
 			print "command not recognized"
@@ -103,7 +101,6 @@ db.Connect()
 max_threads = 20 # Maximum Threads allowed
 threads = []*max_threads # Store threads
 i = 0		 # Count Threads
-NodeIdCount = 0
 
 HOST = ''                                             # Symbolic name meaning all available interfaces
 PORT = int(sys.argv[1])                               # Arbitrary non-privileged port

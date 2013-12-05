@@ -46,7 +46,7 @@ class Handle_thread (threading.Thread):
 
 		if data[0] == str(0):
 
-			file = open(str(NodeInfo[0]) + "/_bk" + str(ChunkIdCount) + '.dat', 'w')
+			file = open("n" + str(Nodeid)  + "/_bk" + str(ChunkIdCount) + '.dat', 'w')
 
 			file.write(str(info[2]))
 
@@ -58,7 +58,7 @@ class Handle_thread (threading.Thread):
 
 		elif data[0] == str(1):
 
-			f = open(str(NodeInfo[0]) + "/_bk" + str(info[1]) + '.dat', 'rb')
+			f = open("n" + str(Nodeid) + "/_bk" + str(info[1]) + '.dat', 'rb')
 
 			Chunk = f.read() # read the entire content of the file
 
@@ -76,6 +76,9 @@ import os				   # Library used for making directories
 
 HOST = str(sys.argv[1]) # The remote host. Inline Parameter.
 PORT = int(sys.argv[2]) # The same port as used by the server. Inline Parameter.
+Nodeid = int(sys.argv[3]) 
+Nodeip = ''
+Nodeport = int(sys.argv[4])
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 s.connect((HOST, PORT))                               # Connect to a remote socket at address. 
@@ -83,24 +86,19 @@ s.connect((HOST, PORT))                               # Connect to a remote sock
 max_threads = 5 # Maximum Threads allowed
 ChunkIdCount = 0
 threads = []*max_threads # Store threads
-message = "4 true"                     				  # String that contains the header and the command
+message = "4 " + str(Nodeid) + " " + str(Nodeip) + " " + str(Nodeport)                     				  # String that contains the header and the command
 s.sendall(message)                                     # Send data to the socket.
-Nodeid = s.recv(1024)  
-print Nodeid
+confirm = s.recv(1024)  
+print confirm
 s.close()
 
-NodeInfo = Nodeid.split(" ")
-
-if not os.path.exists(NodeInfo[0]):
-    os.makedirs(NodeInfo[0])
+if not os.path.exists("n" + str(Nodeid)):
+    os.makedirs("n" + str(Nodeid))
 else:
-	ChunkIdCount = len([name for name in os.listdir(os.getcwd() + "/" + str(NodeInfo[0]))])
-	print str(ChunkIdCount) + " entre"
+	ChunkIdCount = len([name for name in os.listdir(os.getcwd() + "/n" + str(Nodeid))])
 
-
-print str(ChunkIdCount) 
-HOST = '' #NodeInfo[1]                                             # Symbolic name meaning all available interfaces
-PORT = int(NodeInfo[2])                              # Arbitrary non-privileged port
+HOST = Nodeip                                             # Symbolic name meaning all available interfaces
+PORT = Nodeport                             # Arbitrary non-privileged port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 s.bind((HOST, PORT))                                  # Bind socket to an address
 s.listen(10)                                    	  # Establishes the maximum of jobs that the socket can listen
