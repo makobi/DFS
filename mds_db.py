@@ -140,11 +140,11 @@ class mds_db:
 	"""<<< ENCAPSULATED CHEO'S CODE INTO FUNCTIONS >>>"""
 
 	def MetaListFiles(self, db): 
+		acum = ""
 		print "Files in the database"
 		for file, size in db.GetFiles():
-			print file, size
-		print
-		return 1
+			acum += str(file) + " " + str(size) + ","
+		return acum
 
 	def Book_Keeping(self, db):
 		acum = ""
