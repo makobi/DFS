@@ -167,6 +167,7 @@ class mds_db:
 		print "this script"
 		try:
 			db.AddBlockToInode(fpath, nodeToblock)
+			print "hola"
 			return 1
 		except:
 			print "Won't duplicate"

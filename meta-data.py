@@ -40,7 +40,7 @@ class Handle_thread (threading.Thread):
 
 		print 'Connected by', addr #prints the connection
 
-		data = conn.recv(1024)  # Receive data from the socket.
+		data = conn.recv(640000000)  # Receive data from the socket.
 
 		if data[0] == str(0): 	# if header is 0
 			print "list"	  	# command is list
@@ -62,17 +62,17 @@ class Handle_thread (threading.Thread):
 			print "write"		# command is write
 			data = data.split(" ")
 			filepath = data[-1]
-			filename = filepath.split("/")
 			filesize = data[-2]
-			db.InsertFile(filename[-1], filesize)
+			db.InsertFile(filepath, filesize)
 			info = db.Book_Keeping(db)
 			conn.sendall(info)
-			data = conn.recv(1024)  # Receive data from the socket.
+			data = conn.recv(640000000)  # Receive data from the socket.
 			data = data.split(",")
 			relation = []
 			for i in range (0, len(data)-1):
 				temp = data[i].split(":")
 				tup = (temp[0], temp[1])
+				print tup
 				relation.append(tup)
 			db.MetaFileWrite(db, filepath, relation) # Custom Write Function; See mds_db.py
 			print data

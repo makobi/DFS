@@ -40,7 +40,7 @@ class Handle_thread (threading.Thread):
 
 		print 'Connected by', addr #prints the connection
 
-		data = conn.recv(1024)  # Receive data from the socket.
+		data = conn.recv(640000000)  # Receive data from the socket.
 
 		info = data.split("//")
 
@@ -77,7 +77,7 @@ import os				   # Library used for making directories
 HOST = str(sys.argv[1]) # The remote host. Inline Parameter.
 PORT = int(sys.argv[2]) # The same port as used by the server. Inline Parameter.
 Nodeid = int(sys.argv[3]) 
-Nodeip = ''
+Nodeip = "localhost"
 Nodeport = int(sys.argv[4])
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
@@ -99,6 +99,7 @@ else:
 
 HOST = Nodeip                                             # Symbolic name meaning all available interfaces
 PORT = Nodeport                             # Arbitrary non-privileged port
+print HOST
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 s.bind((HOST, PORT))                                  # Bind socket to an address
 s.listen(10)                                    	  # Establishes the maximum of jobs that the socket can listen

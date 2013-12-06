@@ -41,22 +41,31 @@ def splitFile(inputFile,noOfChunks):
 
 	return chunkNames
 
-HOST = str(sys.argv[2]) # The remote host. Inline Parameter.
-PORT = int(sys.argv[3]) # The same port as used by the server. Inline Parameter.
+HOST = str(sys.argv[3]) # The remote host. Inline Parameter.
+port_filepath = str(sys.argv[4]) # The same port as used by the server. Inline Parameter.
 command = str(sys.argv[1]) # The mobile id. Inline Parameter.
-filepath =  str(sys.argv[4])
-fsize = os.path.getsize(filepath)
+filepath =  str(sys.argv[2])
+print filepath
 acum = ""
+
+port_filepath = port_filepath.split(":")
+
+PORT = int(port_filepath[0])
+
+dst = port_filepath[1]
 
 if command == "-t":
 
 	"""<<< TEST WRITE COMMAND >>>"""
 
+	print "entire"
+	fsize = os.path.getsize(filepath)
+
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 	s.connect((HOST, PORT))	                              # Sleep for 3 seconds.
-	message = "3 write " + str(fsize) + " " + filepath        # String that contains the header and the command
+	message = "3 write " + str(fsize) + " " + dst        # String that contains the header and the command
 	s.sendall(message)                                     # Send data to the socket.
-	data = s.recv(1024)                                   # Receive data from the server.
+	data = s.recv(640000000)                                   # Receive data from the server.
 	data = data.split(",")
 	chunkNames = splitFile(filepath, len(data))
 	filepath = filepath.split("/")
@@ -64,11 +73,11 @@ if command == "-t":
 	for i in range (0, len(data)-1):
 		new = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		res = data[i].split(" ")
-		print int(res[2])
-		new.connect((HOST, int(res[2]))) #res[1]
+		print res[1], res[2]
+		new.connect((str(res[1]), int(res[2]))) #res[1]
 		blockInfo = "0//" + str(i) + "//" + chunkNames[i] + "//" + str(fname[0])
 		new.sendall(blockInfo)
-		newData = new.recv(1024)	                              # Sleep for 3 seconds.
+		newData = new.recv(640000000)	                              # Sleep for 3 seconds.
 		new.close()
 		acum += res[0] + ":" + newData + ","
 	s.sendall(acum)
@@ -81,29 +90,34 @@ elif command == "-f":
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 	s.connect((HOST, PORT))								  # Connect to a remote socket at address. 
-	message = "2 read " + filepath                      # String that contains the header and the command
+	message = "2 read " + dst                      # String that contains the header and the command
 	s.sendall(message)                                     # Send data to the socket.
-	data = s.recv(1024)                                   # Receive data from the server.
+	data = s.recv(640000000)                                   # Receive data from the server.
 	print data
 	print "aqui"
 	data = data.split(",")
-	filepath = filepath.split("/")
-	fname = filepath[-1].split(".")
+	fname = filepath
 	i = 0
 	print data
 	print "aqui 1"
-	while not (i >= (len(data)-2)):
+	while not (i >= (len(data)-1)):
 		new = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		res = data[i].split(" ")
 		new.connect((HOST, int(res[2]))) #res[1]
 		blockInfo = "1//" + res[3] + "//" + str(fname[0])
 		new.sendall(blockInfo)
-		newData = new.recv(1024)                              # Sleep for 3 seconds.
+		newData = new.recv(640000000)                              # Sleep for 3 seconds.
 		new.close()
 		acum += newData
 		print acum
 		i += 1
 	sleep(3)                                                                                         
 	s.close()                                             # Close the conection.
+	complete = str(filepath)
+	file = open(complete, 'w')
+
+	file.write(acum)
+
+	file.close()
 
 print "file: " + acum

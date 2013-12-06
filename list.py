@@ -24,7 +24,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 s.connect((HOST, PORT))                               # Connect to a remote socket at address. 
 mobile = "0 list"                     				  # String that contains the header and the command
 s.sendall(mobile)                                     # Send data to the socket.
-data = s.recv(1024)
+data = s.recv(64000)
 data = data.split(",")
 for i in range (0, len(data)-1):
 	res = data[i].split(" ")                                   # Receive data from the server.
