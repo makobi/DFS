@@ -41,7 +41,7 @@ Second Submit:
 		- On the other tabs run 'python client.py <id> localhost <port>' 
 		  i.e. python client.py 1 localhost 50003 
 
-Third Submit:
+Third Submit (Alpha Version):
 
 	meta-data.py: 
 
@@ -110,3 +110,17 @@ Third Submit:
 		  i.e. python data-node.py 1 localhost 50003 
 		- On the other tabs run 'python client.py <id> localhost <port>' 
 		  i.e. python client.py 1 localhost 50003 
+
+Last submit (Beta Version):
+	
+	Everything was achieved.
+
+	Bugs: It can't receive or send large amounts of data. Resulting in file corruption.
+
+	Note: This version was finished on time for the submit. It was not submited because of the bug.
+
+Last Submit (Complete version):
+
+	Everything is working.
+
+	Bug was fixed.
