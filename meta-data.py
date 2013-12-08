@@ -30,14 +30,10 @@
 #		- i.e. python meta-data.py localhost 50003
 #
 
-<<<<<<< HEAD
 # This is how to import a local library
 from mds_db import * # Import local library
 # This is how to import a local library
 from sock import * # Import local library
-=======
-from mds_db import * # Import local library.
->>>>>>> a4141d7798f410c2a6561ad1af0635fb73172bf2
 
 #Libraries
 import socket          # Library used for the socket functions in this program.
@@ -113,8 +109,7 @@ class Handle_thread (threading.Thread):
 			filesize = data[-2] # Get file size.
 			
 			db.InsertFile(filepath, filesize) # Insert file attributes into i-node.
-			
-<<<<<<< HEAD
+
 			info = db.Book_Keeping(db) # Get available nodes
 
 			send_msg(conn, info) # Send available nodes to socket
