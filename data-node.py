@@ -26,6 +26,9 @@
 #		- run 'python data-node.py < meta-data server ip > < meta-data server port > < data-node id number > < data-node ip > < data-node port >
 #		- i.e. python meta-data.py localhost 50003 1 localhost 50001
 
+# This is how to import a local library
+from sock import * # Import local library
+
 #Libraries
 import socket          # Library used for the socket functions in this program.
 import threading       # Library used for the threads and its functions in the program.
@@ -50,7 +53,9 @@ class Handle_thread (threading.Thread):
 
 		global ChunkIdCount # Id for chunks
 
-		data = conn.recv(640000000)  # Receives a message from the client
+		data = recv_msg(conn) # Receives a message from the client
+
+		#data = conn.recv(640000000)  # Receives a message from the client
 
 		info = data.split("//") # Split the message
 
@@ -62,7 +67,9 @@ class Handle_thread (threading.Thread):
 
 			file.close() # Close the file
 
-			conn.sendall(str(ChunkIdCount)) # Send chunk id
+			send_msg(conn, str(ChunkIdCount)) # Send chunk id
+
+			#conn.sendall(str(ChunkIdCount)) # Send chunk id
 
 			ChunkIdCount += 1 # Increment chunk id
 
@@ -74,7 +81,9 @@ class Handle_thread (threading.Thread):
 
 			f.close() # close file
 
-			conn.sendall(Chunk) # Send chunk
+			send_msg(conn, Chunk) # Send chunk
+
+			#conn.sendall(Chunk) # Send chunk
 
 		conn.close()            # Close the connection.
 
@@ -93,6 +102,8 @@ Nodeip = str(sys.argv[4]) # Node IP address
 
 Nodeport = int(sys.argv[5]) # Node port
 
+NodeDirPath = str(sys.argv[6]) # Chunk dir 
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 
 s.connect((HOST, PORT))                               # Connect to a remote socket at address. 
@@ -105,17 +116,25 @@ threads = []*max_threads # Store threads
 
 message = "4 " + str(Nodeid) + " " + str(Nodeip) + " " + str(Nodeport) # Message to meta-data server                    				  # String that contains the header and the command
 
-s.sendall(message) # Send messahe to meta-data
+send_msg(s, message) # Send messahe to meta-data
+
+#s.sendall(message) # Send messahe to meta-data
 
 confirm = s.recv(1024) # Confirmation from meta-data
 
 s.close() # Close socket
 
-if not os.path.exists("n" + str(Nodeid)): # If node directory does not exist
+if not os.path.exists(NodeDirPath + "/n" + str(Nodeid)): # If node directory does not exist
 
-    os.makedirs("n" + str(Nodeid)) # Create Directory
+    try:
+    	os.makedirs(NodeDirPath + "/n" + str(Nodeid)) # Create Directory
+
+    except Exception, e:
+    	raise e
 
 else: # If Directory exists
+	
+	#os.makedirs("n" + str(Nodeid)) # Create Directory
 
 	# Initialize Chunk id counter to the amount of files in the directory
 	ChunkIdCount = len([name for name in os.listdir(os.getcwd() + "/n" + str(Nodeid))])

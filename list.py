@@ -45,7 +45,9 @@ message = "0 list" # String that contains the header and the command
 
 s.sendall(message) # Send data to the socket.
 
-data = s.recv(64000) # Receive the meta-data server's answer 								
+data = recv_msg(s) # Receive the meta-data server's answer 
+
+#data = s.recv(64000) # Receive the meta-data server's answer 								
 
 data = data.split(",") # Split the the data so the files are separeted
 

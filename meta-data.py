@@ -32,6 +32,8 @@
 
 # This is how to import a local library
 from mds_db import * # Import local library
+# This is how to import a local library
+from sock import * # Import local library
 
 #Libraries
 import socket          # Library used for the socket functions in this program.
@@ -56,7 +58,11 @@ class Handle_thread (threading.Thread):
 		""" This thread will listen to the client messages from client.py and then print 
 			the command the client wants to execute"""
 
-		data = conn.recv(640000000)  # Receive data from the socket.
+		#data = conn.recv(640000000)  # Receive data from the socket.
+
+		data = recv_msg(conn)
+
+		data = str(data)
 
 		if data[0] == str(0): 	# if header is 0
 
@@ -66,7 +72,9 @@ class Handle_thread (threading.Thread):
 			
 			info = db.MetaListFiles(db) # Custom List Function; See mds_db.py
 			
-			conn.sendall(info) # Send succes to the socket.
+			send_msg(conn, info) # Send succes to the socket.
+
+			#conn.sendall(info) # Send succes to the socket.
 			
 			print
 
@@ -77,10 +85,16 @@ class Handle_thread (threading.Thread):
 			data = data.split(" ") # Split the message
 			
 			filepath = data[-1] # Get File path
+
+			print filepath
 			
-			info = db.MetaFileRead(db, filepath) # Get data nodes where chunks are stored 
+			info = db.MetaFileRead(db, filepath) # Get data nodes where chunks are stored
+
+			print info 
+
+			send_msg(conn, info) # Send succes to the socket.
 			
-			conn.sendall(info) # Send used nodes to the socket.
+			#conn.sendall(info) # Send used nodes to the socket.
 
 		elif data[0] == str(3):	# if header is 3
 			
@@ -97,10 +111,16 @@ class Handle_thread (threading.Thread):
 			db.InsertFile(filepath, filesize) # Insert file attributes into inode
 			
 			info = db.Book_Keeping(db) # Get available nodes
+
+			send_msg(conn, info) # Send available nodes to socket
 			
-			conn.sendall(info) # Send available nodes to socket
+			#conn.sendall(info) # Send available nodes to socket
+
+			data = recv_msg(conn)
+
+			data = str(data)
 			
-			data = conn.recv(640000000)  # Receive used nodes from the socket.
+			#data = conn.recv(640000000)  # Receive used nodes from the socket.
 			
 			data = data.split(",") # Split node to chunk relations
 			

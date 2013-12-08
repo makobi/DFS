@@ -31,6 +31,9 @@
 #		- i.e. python cp.py -t /Users/Makobi/Documents/hola.txt localhost 30001:Desktop/Test.txt
 #		- i.e. python cp.py -f /Users/Makobi/hola.txt localhost 30001:Desktop/Test.txt
 
+# This is how to import a local library
+from sock import * # Import local library
+
 #Libraries
 import socket              # Library used for the socket functions in this program.
 import sys                 # Library used for the inline parameters in this program.
@@ -85,9 +88,13 @@ if command == "-t": # To DFS
 
 	message = "3 write " + str(fsize) + " " + dst        # String that contains the header and the file path on DFS
 	
-	s.sendall(message)                                   # Send data to the socket.
+	send_msg(s, message)								# Send data to the socket.
+
+	#s.sendall(message)                                   # Send data to the socket.
+
+	data = recv_msg(s)								 # Receive data from the server.
 	
-	data = s.recv(640000000)                             # Receive data from the server.
+	#data = s.recv(640000000)                             # Receive data from the server.
 	
 	data = data.split(",")								 # Split the available nodes info from each others
 	
@@ -106,16 +113,24 @@ if command == "-t": # To DFS
 		new.connect((str(res[1]), int(res[2]))) # Connect to the Data node
 		
 		blockInfo = "0//" + str(i) + "//" + chunkNames[i] + "//" + str(fname[0]) # 
+
+		send_msg(new, blockInfo)
 		
-		new.sendall(blockInfo) # Send the chunk to the data-node
+		#new.sendall(blockInfo) # Send the chunk to the data-node
+
+		newData = recv_msg(new)	# Receive confirmation
+
+		newData = str(newData)
 		
-		newData = new.recv(640000000)	  # Receive confirmation
+		#newData = new.recv(640000000)	  # Receive confirmation
 
 		new.close() # Close socket
 		
-		acum += res[0] + ":" + newData + "," # Acumulate used nodes
+		acum += res[0] + ":" + str(newData) + "," # Acumulate used nodes
 	
-	s.sendall(acum) # Send used nodes to the meta-data server
+	send_msg(s, acum) # Send used nodes to the meta-data server
+
+	#s.sendall(acum) # Send used nodes to the meta-data server
 	
 	s.close() # Close the socket
 
@@ -127,9 +142,15 @@ elif command == "-f": # From DFS
 	
 	message = "2 read " + dst       # String that contains the header and the file path on DFS
 	
-	s.sendall(message)              # Send message to the socket.
+	send_msg(s, message)			# Send data to the socket.
+
+	#s.sendall(message)              # Send message to the socket.
+
+	data = recv_msg(s)				# Receive data-nodes where the file is stored
+
+	data = str(data)
 	
-	data = s.recv(640000000)        # Receive data-nodes where the file is stored
+	#data = s.recv(640000000)       # Receive data-nodes where the file is stored
 	
 	data = data.split(",")			# Split the available nodes info from each others
 	
@@ -146,12 +167,18 @@ elif command == "-f": # From DFS
 		new.connect((HOST, int(res[2]))) # Connect to the Data node
 		
 		blockInfo = "1//" + res[3] + "//" + str(fname[0])
+
+		send_msg(new, blockInfo) # Send the chunk to the data-node
 		
-		new.sendall(blockInfo) # Send the chunk to the data-node
+		#new.sendall(blockInfo) # Send the chunk to the data-node
+
+		newData = recv_msg(new)	# Receive confirmation
 		
-		newData = new.recv(640000000) # Receive confirmation
+		#newData = new.recv(640000000) # Receive confirmation
 		
 		new.close() # Close socket
+
+		newData = str(newData)
 		
 		acum += newData # Send used nodes to the meta-data server
 		
