@@ -1,33 +1,32 @@
 ###############################################################################
 #
-# Filename: cp.py
+# File name: cp.py
 #
-# Author: 
-#			Alex D. Santos Sosa <2013>
-#			Ivan Jimenez
+# Authors: 
+#			Alex D. Santos Sosa  <2013>
+#			Ivan L. Jimenez Ruiz <2013>
 #
 # Description:
 #
 #       The main purpose of this script is to handle the copy command
 #		issued by the user. When the user runs this script, the script 
 #		connects to the meta-data server using the command-line arguments
-#		provided by the user. After the connection is stablished the 
-#		the meta-data server responds with the data the script requested
-#		which is all the available nodes. After the data is received the
-#		the scripts parses the data to separate the information of each node
-#		and conects to each of them and sends them the chunks of the file. 
-#		After the chunks are stored the client sends the meta-data server 
-#		the nodes it used to store the chunks.
+#		provided by the user. After the connection is established the 
+#		the meta-data server responds with the data the script requested,
+#		i.e. all the available nodes. After the data is received, the
+#		the scripts parse the data to separate the information of each node,
+#		connects to each of them and sends them the chunks of the file. 
+#		After the chunks are stored the client sends the nodes it used to
+#		store the chunks to the meta-data server.
 #
-# Run:
+# How to Run:
 #		
-#		Pre-requisites - To run this script the meta-data and the data node 
-#						 servers must be up and running. See meta-data.py and 
-#						 data-node.py.
+#		Pre-requisites - To run this script, the meta-data and the data node 
+#						 servers must be up and running. (See: meta-data.py and data-node.py)
 #
 #		- Open terminal
 #		- Move to the containing folder
-#		- run 'python cp.py < Command > < Path to file in computer > < meta-data server ip > < meta-data server port >:< Path to file in DFS >
+#		- Run 'python cp.py < Command > < Path to file in computer > < meta-data server ip > < meta-data server port >:< Path to file in DFS >
 #		- i.e. python cp.py -t /Users/Makobi/Documents/hola.txt localhost 30001:Desktop/Test.txt
 #		- i.e. python cp.py -f /Users/Makobi/hola.txt localhost 30001:Desktop/Test.txt
 
@@ -36,57 +35,57 @@ from sock import * # Import local library
 
 #Libraries
 import socket              # Library used for the socket functions in this program.
-import sys                 # Library used for the inline parameters in this program.
-import os 				   # Library used for managing the files	
+import sys                 # Library used for the in-line parameters in this program.
+import os 				   # Library used for managing the files.	
 
-# define the function to split the file into smaller chunks
+# Define the function to split the file into smaller chunks:
 def splitFile(inputFile,noOfChunks):
 
-	chunkNames = [] # Stores the chunks
+	chunkNames = [] # Stores the chunks.
 
-	f = open(inputFile, 'rb') # Open the contents of the file
+	f = open(inputFile, 'rb') # Open the contents of the file.
 
-	data = f.read() # Read the entire content of the file
+	data = f.read() # Read the entire content of the file.
 
-	f.close() # Close the file
+	f.close() # Close the file.
 
-	bytes = len(data) # get the length of data, ie size of the input file in bytes
+	bytes = len(data) # Get the length of data, i.e. size of the input file in bytes.
 
-	chunkSize = bytes/(noOfChunks-1) # Calculate the number of chunks to be created
+	chunkSize = bytes/(noOfChunks-1) # Calculate the number of chunks to be created.
 
-	if(bytes%(noOfChunks-1) != 0): # Fix ratio
+	if(bytes%(noOfChunks-1) != 0): # Fix the ratio.
 		chunkSize+=1
 
-	for i in range(0, bytes+1, chunkSize): # Split file and store chunks
+	for i in range(0, bytes+1, chunkSize): # Split file and store chunks.
 		chunkNames.append(data[i:i+ chunkSize])
 
-	return chunkNames # Return chunks
+	return chunkNames # Return chunks.
 
-HOST = str(sys.argv[3]) # The remote host. Inline Parameter.
+HOST = str(sys.argv[3]) # The remote host. In-line Parameter.
 
-port_filepath = str(sys.argv[4]) # Port and DFS path
+port_filepath = str(sys.argv[4]) # Port and DFS path.
 
-command = str(sys.argv[1]) # Copy To or From DFS
+command = str(sys.argv[1]) # Copy To or From DFS.
 
-filepath =  str(sys.argv[2]) # File to be stored to the DFS or file to be stored from DFS
+filepath =  str(sys.argv[2]) # File to be stored to the DFS or file to be stored from the DFS.
 
-acum = "" # Concatenates the chunks
+acum = "" # Concatenate the chunks.
 
-port_filepath = port_filepath.split(":") # Split the port from the path
+port_filepath = port_filepath.split(":") # Split the port from the path at every ':'.
 
-PORT = int(port_filepath[0]) # Port
+PORT = int(port_filepath[0]) # Port.
 
-dst = port_filepath[1] # Path to file in the DFS
+dst = port_filepath[1] # Path to file in the DFS.
 
-if command == "-t": # To DFS
+if command == "-t": # To DFS:
 
-	fsize = os.path.getsize(filepath) # Get file size
+	fsize = os.path.getsize(filepath) # Get the file size.
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 
 	s.connect((HOST, PORT))	                              # Sleep for 3 seconds.
 
-	message = "3 write " + str(fsize) + " " + dst        # String that contains the header and the file path on DFS
+	message = "3 write " + str(fsize) + " " + dst         # String that contains the header and the file path on DFS.
 	
 	send_msg(s, message)								# Send data to the socket.
 
@@ -95,22 +94,24 @@ if command == "-t": # To DFS
 	data = recv_msg(s)								 # Receive data from the server.
 	
 	#data = s.recv(640000000)                             # Receive data from the server.
-	
-	data = data.split(",")								 # Split the available nodes info from each others
-	
-	chunkNames = splitFile(filepath, len(data))			 # Split file and get the chunks 
-	
-	filepath = filepath.split("/")						 # Split filepath
-	
-	fname = filepath[-1].split(".")						 # Get file name
-	
-	for i in range (0, len(data)-1): # For each available node
 
-		new = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # New socket to connect to the datanodes
+	data = str(data)                            		# Receive data from the server.
+	 
+	data = data.split(",")								  # Split the "available nodes" info from each other.
+	
+	chunkNames = splitFile(filepath, len(data))			  # Split file and get the chunks.
+	
+	filepath = filepath.split("/")						  # Split filepath.
+	
+	fname = filepath[-1].split(".")						  # Get file name.
+	 
+	for i in range (0, len(data)-1): # For each available node:
 
-		res = data[i].split(" ") # Separate the attribute of the node
+		new = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # New socket to connect to the data-node.
+
+		res = data[i].split(" ") # Separate the attribute of the data-node.
 		
-		new.connect((str(res[1]), int(res[2]))) # Connect to the Data node
+		new.connect((str(res[1]), int(res[2]))) # Connect to the data-node.
 		
 		blockInfo = "0//" + str(i) + "//" + chunkNames[i] + "//" + str(fname[0]) # 
 
@@ -124,7 +125,7 @@ if command == "-t": # To DFS
 		
 		#newData = new.recv(640000000)	  # Receive confirmation
 
-		new.close() # Close socket
+		new.close() # Close new socket connection.
 		
 		acum += res[0] + ":" + str(newData) + "," # Acumulate used nodes
 	
@@ -132,15 +133,15 @@ if command == "-t": # To DFS
 
 	#s.sendall(acum) # Send used nodes to the meta-data server
 	
-	s.close() # Close the socket
+	s.close() # Close socket connection.
 
-elif command == "-f": # From DFS
+elif command == "-f": # From DFS:
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 
 	s.connect((HOST, PORT))			# Connect to a remote socket at address. 
 	
-	message = "2 read " + dst       # String that contains the header and the file path on DFS
+	message = "2 read " + dst       # String that contains the header and the file path on DFS.
 	
 	send_msg(s, message)			# Send data to the socket.
 
@@ -152,20 +153,20 @@ elif command == "-f": # From DFS
 	
 	#data = s.recv(640000000)       # Receive data-nodes where the file is stored
 	
-	data = data.split(",")			# Split the available nodes info from each others
+	data = data.split(",")			# Split the "available nodes" info from each other.
 	
-	fname = filepath 				# Decided to use the file path as the name
+	fname = filepath 				# Use the file path as the name.
 	
-	i = 0							# Loop index
+	i = 0							# Loop index.
 	
-	while not (i >= (len(data)-1)): # For each data-node
+	while not (i >= (len(data)-1)): # For each data-node:
 
-		new = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # New socket to connect to the datanodes
+		new = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # New socket to connect to the data-nodes.
 		
-		res = data[i].split(" ") # Separate the attribute of the node
+		res = data[i].split(" ") # Separate the attribute of the node.
 		
-		new.connect((HOST, int(res[2]))) # Connect to the Data node
-		
+		new.connect((HOST, int(res[2]))) # Connect to the data-node
+
 		blockInfo = "1//" + res[3] + "//" + str(fname[0])
 
 		send_msg(new, blockInfo) # Send the chunk to the data-node
@@ -180,16 +181,16 @@ elif command == "-f": # From DFS
 
 		newData = str(newData)
 		
-		acum += newData # Send used nodes to the meta-data server
+		acum += newData # Send used nodes to the meta-data server.
 		
-		i += 1 # Increment counter                                                                                  
+		i += 1 # Increment counter.                                                                                  
 	
-	s.close() # Close the conection.
-	
-	complete = str(filepath) # Complete file path
-	
-	file = open(complete, 'w') # Create file
+	s.close() # Close socket connection.
 
-	file.write(acum) # Write the concatenated chunks into the file
+	complete = str(filepath) # Complete file path.
+	
+	file = open(complete, 'w') # Create file.
 
-	file.close() # Close file
+	file.write(acum) # Write the concatenated chunks into the file.
+
+	file.close() # Close file.

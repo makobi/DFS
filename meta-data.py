@@ -1,50 +1,54 @@
 ###############################################################################
 #
-# Filename: meta-data.py
+# File name: meta-data.py
 #
 # Author: 
 #		  
 #		Jose R. Ortiz <2012>
-#		Alex D. Santos Sosa <2013>
-#		Ivan Jimenez
+#		Alex D. Santos Sosa  <2013>
+#		Ivan L. Jimenez Ruiz <2013>
 #
 # Description:
 #
-#       The main purpose of this script is to provide meta data to the clients
-#		When this script starts it listens for connections. If the connection
-#		was stablished by a data-node it stores the meta-data of the datanode 
-#		into the database. If the connections was stablihed by a client it checks
+#       The main purpose of this script is to provide meta data to the clients.
+#		When this script starts, it listens for connections. If the connection
+#		was established by a data-node, it stores the meta-data of the data-node 
+#		into the database. If the connection was establihed by a client, it checks
 # 		the command that was issued and decides what to do. If the command was a
-# 		list it return all the files that are stored in the DFS. Is the command 
+# 		'list', it return all the files that are stored in the DFS. If the command 
 #		was a write, it returns the available nodes and then stores the nodes the
-#		client used to store the chunks. If the command was a read command it 
+#		client used for storing the chunks. If the command was a 'read', it 
 #		checks in the database what data nodes the client used to store that 
-#		particular file and returns them to the client. Else the command is not
+#		particular file and returns them to the client. Else, the command is not
 # 		recognized.
 #
-# Run:
+# How to Run:
 #
 #		- Open terminal
 #		- Move to the containing folder
-#		- run 'python list.py < meta-data server ip > < meta-data server port >
+#		- Run 'python list.py < meta-data server ip > < meta-data server port >
 #		- i.e. python meta-data.py localhost 50003
 #
 
+<<<<<<< HEAD
 # This is how to import a local library
 from mds_db import * # Import local library
 # This is how to import a local library
 from sock import * # Import local library
+=======
+from mds_db import * # Import local library.
+>>>>>>> a4141d7798f410c2a6561ad1af0635fb73172bf2
 
 #Libraries
 import socket          # Library used for the socket functions in this program.
-import threading       # Library used for the threads and its functions in the program.
-import sys             # Library used for the inline parameters in this program.
+import threading       # Library used for the threads and thread functions in this program.
+import sys             # Library used for the in-line parameters in this program.
 
 
-# Handle Class Thread
+# Handle Class Thread:
 class Handle_thread (threading.Thread):
 
-	# Initialization of the thread
+	# Initialization of the thread:
 	def __init__(self, name, db, conn, addr):
 		threading.Thread.__init__(self)
 		self.name = name
@@ -53,7 +57,7 @@ class Handle_thread (threading.Thread):
 		self.db = db
 		print "Starting " + self.name
 
-	# Define what the thread is to do
+	# Define what the thread will do:
 	def run(self):
 		""" This thread will listen to the client messages from client.py and then print 
 			the command the client wants to execute"""
@@ -64,13 +68,13 @@ class Handle_thread (threading.Thread):
 
 		data = str(data)
 
-		if data[0] == str(0): 	# if header is 0
+		if data[0] == str(0): 	# If header is 0:
 
-			print "list"	  	# command is list
+			print "list"	  	# The command is "list".
 			
 			print
 			
-			info = db.MetaListFiles(db) # Custom List Function; See mds_db.py
+			info = db.MetaListFiles(db) # Custom List Function. (See: mds_db.py)
 			
 			send_msg(conn, info) # Send succes to the socket.
 
@@ -78,11 +82,11 @@ class Handle_thread (threading.Thread):
 			
 			print
 
-		elif data[0] == str(2):	# if header is 2
+		elif data[0] == str(2):	# If header is 2:
 			
-			print "read"		# command is read
+			print "read"		# The command is "read".
 			
-			data = data.split(" ") # Split the message
+			data = data.split(" ") # Split the message.
 			
 			filepath = data[-1] # Get File path
 
@@ -96,20 +100,21 @@ class Handle_thread (threading.Thread):
 			
 			#conn.sendall(info) # Send used nodes to the socket.
 
-		elif data[0] == str(3):	# if header is 3
+		elif data[0] == str(3):	# If header is 3:
 			
-			print "write"		# command is write
+			print "write"		# The command is "write".
 			
-			relation = [] # Stores the node to chunk relations
+			relation = [] # Stores the node-to-chunk relationships.
 			
-			data = data.split(" ") # Split the message
+			data = data.split(" ") # Split the message.
 			
-			filepath = data[-1] # Get filepath
+			filepath = data[-1] # Get file path.
 			
-			filesize = data[-2] # Get filesize
+			filesize = data[-2] # Get file size.
 			
-			db.InsertFile(filepath, filesize) # Insert file attributes into inode
+			db.InsertFile(filepath, filesize) # Insert file attributes into i-node.
 			
+<<<<<<< HEAD
 			info = db.Book_Keeping(db) # Get available nodes
 
 			send_msg(conn, info) # Send available nodes to socket
@@ -122,80 +127,80 @@ class Handle_thread (threading.Thread):
 			
 			#data = conn.recv(640000000)  # Receive used nodes from the socket.
 			
-			data = data.split(",") # Split node to chunk relations
+			data = data.split(",") # Split node-to-chunk relationships.
 			
-			for i in range (0, len(data)-1): # For each node to chunk relation
+			for i in range (0, len(data)-1): # For each node-to-chunk relationship:
 				
-				temp = data[i].split(":") # Split the node from the chunk
+				temp = data[i].split(":") # Split the node from the chunk.
 				
-				tup = (temp[0], temp[1]) # create a tuple with the node and the chunk
+				tup = (temp[0], temp[1]) # Create a tuple with the node and the chunk.
 				
-				relation.append(tup) # Store the tupple in the list
+				relation.append(tup) # Store the tuple in the list.
 			
-			db.MetaFileWrite(db, filepath, relation) # Custom Write Function; Store the relation
+			db.MetaFileWrite(db, filepath, relation) # Custom Write Function; Store the relationship.
 			
 			conn.sendall("Success") # Send succes to the socket.
 			
 			print
 
-		elif data[0] == str(4): # if header is 4
+		elif data[0] == str(4): # If header is 4:
 			
-			print "creating node" # command is create a node
+			print "Creating node" # The command is "create a node".
 			
-			info = data.split(" ") # Split the message
+			info = data.split(" ") # Split the message at every space.
 			
-			db.AddDataNode("n" + info[1], info[2], info[3]) # Add data node to database
+			db.AddDataNode("n" + info[1], info[2], info[3]) # Add data-node to database.
 			
 			conn.sendall("Node created") # Send succes to the socket. 
 			
-		else: # Command not recognized
+		else: # Command not recognized.
 			
-			print "command not recognized"
+			print "Command not recognized"
 			
 			print
 
 		conn.close()            # Close the connection.
 
-# Create an object of type mds_db
+# Create an object of type mds_db.
 db = mds_db() 
 
-# Connect to the database
+# Connect to the database.
 print "Connecting to database" 
 
 db.Connect() 
 
-max_threads = 20 # Maximum Threads allowed
+max_threads = 20 # Maximum Threads allowed.
 
-threads = []*max_threads # Store threads
+threads = []*max_threads # Store threads.
 
-i = 0		 # Count Threads
+i = 0	# Count Threads.
 
-HOST = ''                                             # Symbolic name meaning all available interfaces
+HOST = ''                                             # Symbolic name, meaning all available interfaces.
 
-PORT = int(sys.argv[1])                               # Arbitrary non-privileged port
+PORT = int(sys.argv[1])                               # Arbitrary non-privileged port.
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 
-s.bind((HOST, PORT))                                  # Bind socket to an address
+s.bind((HOST, PORT))                                  # Bind socket to an address.
 
-s.listen(10)                                    	  # Establishes the maximum of jobs that the socket can listen
+s.listen(10)                                    	  # Establishes the maximum of jobs that the socket can listen for.
 
-while len(threads) != max_threads: # For each connection
+while len(threads) != max_threads: # For each connection:
 
-	conn, addr = s.accept() #Starts accepting connections from the socket
+	conn, addr = s.accept() #Starts accepting connections from the socket.
 	# Create new threads
-	newthread = Handle_thread("Handle_thread", db, conn, addr)  # Create a thread that hanldes the connection
+	newthread = Handle_thread("Handle_thread", db, conn, addr)  # Create a thread that handles the connection.
 
-	newthread.start()	# Start the thread
+	newthread.start()	# Start the thread.
 
-	threads.append(newthread)	# Store thread in a list
+	threads.append(newthread)	# Store thread in a list.
 
-for t in threads: # For each thread
+for t in threads: # For each thread:
 
-	t.join()	# Wait for each thread to join    
+	t.join()	# Wait for each thread to finish.  
 
 print "Exiting Main Thread"
 
-s.close() # Close socket
+s.close() # Close socket connection.
 
-db.Close() # Close DB connection
+db.Close() # Close DB connection.
