@@ -1,9 +1,11 @@
 ###############################################################################
 #
-# Filename: mds_db.py
+# File name: mds_db.py
+
 # Author: Jose R. Ortiz and ... (hopefully some students contribution)
 #
 # Description:
+
 # 	MySQL support library for the DFS project. Database info for the 
 #       metadata server.
 #
@@ -88,7 +90,7 @@ class mds_db:
 			return 0
 	
  	def GetFileInfo(self, fname):
-		"""Given a filename, if the file is stored in DFS
+		"""Given a file name, if the file is stored in DFS
      		   return its filename id and fsize.  Internal use only.
 		   Does not have to be accessed from the metadata server.
 		"""
