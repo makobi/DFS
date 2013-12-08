@@ -23,8 +23,8 @@
 #
 #		- Open terminal
 #		- Move to the containing folder
-#		- Run 'python data-node.py < meta-data server ip > < meta-data server port > < data-node ID number > < data-node IP > < data-node port >
-#		- i.e. python meta-data.py localhost 50003 1 localhost 50001
+#		- Run 'python data-node.py < meta-data server ip > < meta-data server port > < data-node ID number > < data-node IP > < data-node port > < Path to Chunk Directory >
+#		- i.e. python data-node.py localhost 30000 2 localhost 50002 ~/Assigment-4
 
 # This is how to import a local library
 from sock import * # Import local library

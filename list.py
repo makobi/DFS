@@ -27,7 +27,7 @@
 #		- Open terminal
 #		- Move to the containing folder
 #		- Run 'python list.py < meta-data server ip > < meta-data server port >
-#		- i.e. python meta-data.py localhost 50003
+#		- i.e. python list.py localhost 50003
 #
 
 #Libraries
