@@ -165,7 +165,7 @@ elif command == "-f": # From DFS:
 		
 		res = data[i].split(" ") # Separate the attribute of the node.
 		
-		new.connect((HOST, int(res[2]))) # Connect to the data-node
+		new.connect((str(res[1]), int(res[2]))) # Connect to the data-node
 
 		blockInfo = "1//" + res[3] + "//" + str(fname[0])
 

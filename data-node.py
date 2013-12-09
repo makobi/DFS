@@ -102,11 +102,7 @@ Nodeip = str(sys.argv[4]) # Node IP address.
 
 Nodeport = int(sys.argv[5]) # Node port.
 
-NodeDirPath = str(sys.argv[6]) # Chunk dir 
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
-
-s.connect((HOST, PORT))                               # Connect to a remote socket at address. 
+NodeDirPath = str(sys.argv[6]) # Chunk dir
 
 max_threads = 5 # Maximum Threads allowed.
 
@@ -115,6 +111,10 @@ ChunkIdCount = 0 # Initialize chunk ID counter.
 threads = []*max_threads # Store threads.
 
 message = "4 " + str(Nodeid) + " " + str(Nodeip) + " " + str(Nodeport) # Message to meta-data server.                   				  # String that contains the header and the command
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
+
+s.connect((HOST, PORT))                               # Connect to a remote socket at address. 
 
 send_msg(s, message) # Send messahe to meta-data
 
@@ -137,7 +137,7 @@ else: # If Directory exists
 	#os.makedirs("n" + str(Nodeid)) # Create Directory
 
 	# Initialize chunk id counter to the amount of files in the directory.
-	ChunkIdCount = len([name for name in os.listdir(os.getcwd() + "/n" + str(Nodeid))])
+	ChunkIdCount = len([name for name in os.listdir(NodeDirPath + "/n" + str(Nodeid))])
 
 HOST = Nodeip                               # Symbolic name, meaning all available interfaces.
 

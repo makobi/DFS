@@ -90,8 +90,6 @@ class Handle_thread (threading.Thread):
 			
 			info = db.MetaFileRead(db, filepath) # Get data nodes where chunks are stored
 
-			print info 
-
 			send_msg(conn, info) # Send succes to the socket.
 			
 			#conn.sendall(info) # Send used nodes to the socket.
@@ -170,15 +168,15 @@ threads = []*max_threads # Store threads.
 
 i = 0	# Count Threads.
 
-HOST = ''                                             # Symbolic name, meaning all available interfaces.
+HOST = str(sys.argv[1])                                             # Symbolic name, meaning all available interfaces.
 
-PORT = int(sys.argv[1])                               # Arbitrary non-privileged port.
+PORT = int(sys.argv[2])                               # Arbitrary non-privileged port.
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a new socket.
 
 s.bind((HOST, PORT))                                  # Bind socket to an address.
 
-s.listen(10)                                    	  # Establishes the maximum of jobs that the socket can listen for.
+s.listen(max_threads)                                    	  # Establishes the maximum of jobs that the socket can listen for.
 
 while len(threads) != max_threads: # For each connection:
 
