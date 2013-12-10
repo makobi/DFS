@@ -47,6 +47,8 @@ def splitFile(inputFile,noOfChunks):
 
 	data = f.read() # Read the entire content of the file.
 
+	print "largo de dat", len(data)
+
 	f.close() # Close the file.
 
 	bytes = len(data) # Get the length of data, i.e. size of the input file in bytes.
@@ -113,7 +115,7 @@ if command == "-t": # To DFS:
 		
 		new.connect((str(res[1]), int(res[2]))) # Connect to the data-node.
 		
-		blockInfo = "0//" + str(i) + "//" + chunkNames[i] + "//" + str(fname[0]) # 
+		blockInfo = "0Alex#Ivan^Cheo" + str(i) + "Alex#Ivan^Cheo" + chunkNames[i] + "Alex#Ivan^Cheo" + str(fname[0]) # 
 
 		send_msg(new, blockInfo)
 		
@@ -167,7 +169,7 @@ elif command == "-f": # From DFS:
 		
 		new.connect((str(res[1]), int(res[2]))) # Connect to the data-node
 
-		blockInfo = "1//" + res[3] + "//" + str(fname[0])
+		blockInfo = "1Alex#Ivan^Cheo" + res[3] + "Alex#Ivan^Cheo" + str(fname[0])
 
 		send_msg(new, blockInfo) # Send the chunk to the data-node
 		

@@ -57,7 +57,9 @@ class Handle_thread (threading.Thread):
 
 		#data = conn.recv(640000000)  # Receives a message from the client
 
-		info = data.split("//") # Split the message.
+		info = data.split("Alex#Ivan^Cheo") # Split the message.
+
+		print "len de lista", len(info)
 
 		if data[0] == str(0): # If command is 'copy to':
 
