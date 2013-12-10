@@ -30,6 +30,8 @@
 #		- i.e. python list.py localhost 50003
 #
 
+from sock import * # Import local library
+
 #Libraries
 import socket              # Library used for the socket functions in this program.
 import sys                 # Library used for the in-line parameters in this program.
@@ -43,7 +45,9 @@ s.connect((HOST, PORT)) # Connect to a remote socket at address.
 
 message = "0 list" # String that contains the header and the command.
 
-s.sendall(message) # Send data to the socket.
+send_msg(s, message) # Send data to the socket.
+
+#s.sendall(message) # Send data to the socket.
 
 data = recv_msg(s) # Receive the meta-data server's answer 
 
